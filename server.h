@@ -16,10 +16,11 @@ private:
     std::thread worker;
     std::atomic<bool> isWork;
 public:
+    using servFuncType = std::function<std::string(Package)>;
     Server(std::string _addr, uint32_t _port,bool _isNonBlocking = false);
     bool start();
     void stop();
-    void addMethod(std::string_view _request, Pool::funcType _func);
+    void addMethod(std::string_view _request,std::string_view _returnType ,servFuncType _func);
 };
 
 #endif // SERVER_H

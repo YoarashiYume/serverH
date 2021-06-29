@@ -9,7 +9,7 @@ Pool::Pool()
 
 void Pool::addFunc(std::string_view _request, funcType _func)
 {
-    funcList[_request.data()] = _func;
+    funcList.emplace(std::make_pair(_request.data(),_func));
 }
 void Pool::work()
 {
@@ -26,10 +26,10 @@ void Pool::work()
             taskList.pop();
             supMtx.unlock();
             Package param (sock.getMessage());
-            std::string str;
-            if (funcList.contains(param.getUri()))//if there is no function - just close socket
+            if (funcList.contains(param.getUri()))
                 funcList.at(param.getUri())(sock,param);
-            sock.closeOuterConnection();
+            else                                        //if there is no function - send empty answer and close socket
+                funcList.at("")(sock,param);
         }
     }
 

@@ -106,9 +106,12 @@ void Socket_M::sendMessage(std::string str) const
 void Socket_M::closeOuterConnection()
 {
     close(connetcion);
+    connetcion = 0;
 }
 void Socket_M::closeInnerConnection()
 {
-    send(mSocket, "", 0, NULL);//for leave accept() func
+    if (getsockopt(mSocket,SOL_SOCKET,SO_ERROR,nullptr,nullptr)!=-1)
+        send(mSocket, "", 0, NULL);//for leave accept() func
     close(mSocket);
+    mSocket = 0;
 }

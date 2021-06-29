@@ -1,9 +1,13 @@
 #ifndef _RANDOMIZER_H_
 
 #define _RANDOMIZER_H_
+/*
+ * Just randomizer.
+ * Exists for example only
+ * */
 #include <random>
 #include <chrono>
-#include <vector>
+
 
 class Randomizer
 {

@@ -1,5 +1,9 @@
 #ifndef POOL_H
 #define POOL_H
+/*
+ * ThreadPool for treatment incoming socket
+*/
+
 #include <thread>
 #include <vector>
 #include <stack>
@@ -8,14 +12,12 @@
 #include <functional>
 #include <mutex>
 #include <atomic>
-#include "Randomizer.h"
 #include "socket_m.h"
 
 class Pool
 {
 public:
-    using funcType = std::function<std::string(Package)>;
-    void answerFunc(Socket_M& sock,Package& pack, std::string msg);
+    using funcType = std::function<void(Socket_M,Package)>;
     Pool();
     void addFunc(std::string_view _request, funcType _func);
     void addTask(Socket_M sock);

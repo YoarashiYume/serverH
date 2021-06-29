@@ -1,15 +1,5 @@
 #include "pool.h"
 
-void Pool::answerFunc(Socket_M &sock,Package& pack, std::string msg)
-{
-    sock.sendMessage(pack.getProtocol());
-    sock.sendMessage(" 200 OK\r\nConnection: close\r\nContent-Length: ");
-    sock.sendMessage(std::to_string(msg.length()));
-    sock.sendMessage("\r\nContent-Type: text/html\r\n\r\n");
-    sock.sendMessage(msg);
-
-}
-
 Pool::Pool()
 {
     int newSize=2*(std::thread::hardware_concurrency()-1);
@@ -37,11 +27,8 @@ void Pool::work()
             supMtx.unlock();
             Package param (sock.getMessage());
             std::string str;
-            if (funcList.contains(param.getUri()))
-                str = funcList.at(param.getUri())(param);
-            else
-                str = "Invalid request";
-            answerFunc(sock,param,str);
+            if (funcList.contains(param.getUri()))//if there is no function - just close socket
+                funcList.at(param.getUri())(sock,param);
             sock.closeOuterConnection();
         }
     }

@@ -11,9 +11,9 @@ void Server::mainFunc()
     }
 }
 
-Server::Server(std::string _addr, uint32_t _port, bool _mode)
+Server::Server(std::string _addr, uint32_t _port, bool _isNonBlocking)
 {
-    sock.upDate(_addr,_port,_mode);
+    sock.upDate(_addr,_port,_isNonBlocking);
     isWork.store(true);
 }
 
@@ -22,8 +22,7 @@ bool Server::start()
     if(!sock.listenPort())
         return false;
     thPool.start();
-    std::thread th(&Server::mainFunc,this);
-    worker = std::move(th);
+    worker = std::thread(&Server::mainFunc,this);
     return true;
 }
 

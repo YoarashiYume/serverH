@@ -16,15 +16,16 @@ Package::Package(std::string_view info)
     while (std::getline(stream,token,'\r'))
     {
         if (header.contains("Content-Type:"))
-        {
+        {//Parses simple data
             stream.str(stream.str().substr((int)stream.tellg()+token.length()));
             while (std::getline(stream,token,'&'))
-                param[token.substr(0,token.find('='))] = token.substr(token.find('=')+1);
+                parameterList[token.substr(0,token.find('='))] = token.substr(token.find('=')+1);
             return;
         }
         if (token.front()!='\n')
         {
-            header["Prococol"] = token; continue;
+            header["Protocol"] = token;
+            continue;
         }
         else
         {
@@ -38,13 +39,13 @@ Package::Package(std::string_view info)
 Package::Package(const Package &other)
 {
     this->header = other.header;
-    this->param = other.param;
+    this->parameterList = other.parameterList;
 }
 
 Package::Package(Package &&other)
 {
     this->header = std::move(other.header);
-    this->param = std::move(other.param);
+    this->parameterList = std::move(other.parameterList);
 }
 
 Package &Package::operator=(Package &&other)
@@ -52,7 +53,7 @@ Package &Package::operator=(Package &&other)
     if (this == &other)
         return *this;
     this->header = std::move(other.header);
-    this->param = std::move(other.param);
+    this->parameterList = std::move(other.parameterList);
     return *this;
 }
 Package &Package::operator=(const Package &other)
@@ -60,14 +61,14 @@ Package &Package::operator=(const Package &other)
     if (this == &other)
         return *this;
     this->header = other.header;
-    this->param = other.param;
+    this->parameterList = other.parameterList;
     return *this;
 }
 
 
-std::size_t Package::paramSize() const
+std::size_t Package::paramCount() const
 {
-    return param.size();
+    return parameterList.size();
 }
 
 std::string Package::getUri() const
@@ -82,10 +83,10 @@ std::string Package::getMethod() const
 
 std::string Package::getProtocol() const
 {
-    return header.at("Prococol");
+    return header.at("Protocol");
 }
 
-const Package::paramCont &Package::getParam() const
+const Package::parameterContainer &Package::getParam() const
 {
-    return param;
+    return parameterList;
 }

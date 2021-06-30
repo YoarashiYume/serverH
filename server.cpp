@@ -34,6 +34,7 @@ void Server::stop()
 {
     isWork.store(false);
     thPool.stop();
+    sock.sendEmptyInnerMessage();
     sock.closeInnerConnection();
     worker.join();
 }

@@ -110,8 +110,15 @@ void Socket_M::closeOuterConnection()
 }
 void Socket_M::closeInnerConnection()
 {
-    if (getsockopt(mSocket,SOL_SOCKET,SO_ERROR,nullptr,nullptr)!=-1)
-        send(mSocket, "", 0, NULL);//for leave accept() func
+
+    /*if (getsockopt(mSocket,SOL_SOCKET,SO_ERROR,nullptr,nullptr)==-1)
+        if (errno != 88)
+            sendEmptyInnerMessage();*/
     close(mSocket);
     mSocket = 0;
+}
+
+void Socket_M::sendEmptyInnerMessage()
+{
+     send(mSocket, "", 0, NULL);//for leave accept() func
 }

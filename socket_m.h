@@ -33,6 +33,7 @@ public:
     void sendMessage(std::string str) const;
     void closeOuterConnection();
     void closeInnerConnection();
+    void sendEmptyInnerMessage();
 };
 
 #endif // SOCKET_M_H

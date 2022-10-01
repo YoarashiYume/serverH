@@ -1,6 +1,6 @@
 #include "package.h"
 
-Package::Package(std::string_view info)
+Package::Package(const std::string_view info)
 {
     std::istringstream stream{info.data()};
     std::string token;
@@ -34,35 +34,6 @@ Package::Package(std::string_view info)
         }
 
     }
-}
-
-Package::Package(const Package &other)
-{
-    this->header = other.header;
-    this->parameterList = other.parameterList;
-}
-
-Package::Package(Package &&other)
-{
-    this->header = std::move(other.header);
-    this->parameterList = std::move(other.parameterList);
-}
-
-Package &Package::operator=(Package &&other)
-{
-    if (this == &other)
-        return *this;
-    this->header = std::move(other.header);
-    this->parameterList = std::move(other.parameterList);
-    return *this;
-}
-Package &Package::operator=(const Package &other)
-{
-    if (this == &other)
-        return *this;
-    this->header = other.header;
-    this->parameterList = other.parameterList;
-    return *this;
 }
 
 

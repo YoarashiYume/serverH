@@ -1,26 +1,53 @@
 #ifndef SERVER_H
 #define SERVER_H
-/*
- * Gets outer connection and push it in processing pool
-*/
+
 #include "pool.h"
 #include "socket_m.h"
 
-
-class Server
+/**
+\brief Class gets outer connection and push it in processing pool
+*/
+class Server final
 {
 private:
+	/**
+	\brief Method gets new connection and pushs task to ThreadPool
+	*/
     void mainFunc();
-    Socket_M sock;
-    Pool thPool;
-    std::thread worker;
-    std::atomic<bool> isWork;
+	
+    Socket_M sock;///< Server socket
+    Pool thPool;///< ThreadPool
+    std::thread worker;///< Main server thread in which the connection takes place
+    std::atomic<bool> isWork;///< server current state
 public:
-    using servFuncType = std::function<std::string(Package)>;
-    Server(std::string _addr, uint32_t _port,bool _isNonBlocking = false);
+	/**
+	\brief handler function type
+	\param Package - received REST request
+	\return std::string server response to request
+	*/
+    using servFuncType = std::function<std::string(Package)>; 
+	/**
+	\brief Constructor
+	\param _addr address to which the socket will be bound.
+	\param _port server port
+	\param _isNonBlocking whether waiting for a socket connection should block code execution
+	*/
+    Server(const std::string& _addr, const uint32_t _port,const bool _isNonBlocking = false);
+	/**
+	\brief Method starts server
+	*/
     bool start();
+	/**
+	\brief Method stops server
+	*/
     void stop();
-    void addMethod(std::string_view _request,std::string_view _returnType ,servFuncType _func);
+	/**
+	\brief Method adding request processing
+	\param _request request on which the function is executed
+	\param _returnType response message type
+	\param _func handler function
+	*/
+    void addMethod(const std::string_view _request,const std::string_view _returnType ,servFuncType _func);
 };
 
 #endif // SERVER_H

@@ -11,7 +11,7 @@ void Server::mainFunc()
     }
 }
 
-Server::Server(std::string _addr, uint32_t _port, bool _isNonBlocking)
+Server::Server(const std::string& _addr, const uint32_t _port,const bool _isNonBlocking)
 {
     sock.upDate(_addr,_port,_isNonBlocking);
     isWork.store(true);
@@ -39,7 +39,7 @@ void Server::stop()
     worker.join();
 }
 
-void Server::addMethod(std::string_view _request,std::string_view _returnType ,servFuncType _func)
+void Server::addMethod(const std::string_view _request,const std::string_view _returnType ,servFuncType _func)
 {
     thPool.addFunc(_request,[_returnType,_func](Socket_M sock,Package param)->void{
         std::string msg =_func(param);

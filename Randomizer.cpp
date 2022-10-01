@@ -2,14 +2,12 @@
 
 void Randomizer::checkRange()
 {
-	//swap range
 	if (from > to)
 		from ^= to ^= from ^= to;
 }
 
 Randomizer::Randomizer()
 {
-	//create unique generator
 	generator.seed(time(0));
 	from = 0;
 	to = 1;
@@ -17,7 +15,6 @@ Randomizer::Randomizer()
 
 Randomizer::Randomizer(int from_, int to_)
 {
-	//create unique generator
 	generator.seed(time(0));
 	from = from_;
 	to = to_;

@@ -1,60 +1,11 @@
 #include "socket_m.h"
 
-Socket_M::Socket_M(std::string _addr, uint32_t _port,bool _isNonBlocking)
+Socket_M::Socket_M(const std::string& _addr, const uint32_t _port, const bool _isNonBlocking)
 {
     upDate(_addr,_port,_isNonBlocking);
 }
 
-Socket_M::Socket_M(const Socket_M &other)
-{
-    this->addr = other.addr;
-    this->clientAddr = other.clientAddr;
-    this->isNonBlocking = other.isNonBlocking;
-    this->mSocket = other.mSocket;
-    this->connetcion = other.connetcion;
-    this->sizeOfAddr = other.sizeOfAddr;
-}
-
-Socket_M::Socket_M(Socket_M &&other)
-{
-    this->addr = other.addr;
-    this->clientAddr = other.clientAddr;
-    this->isNonBlocking = other.isNonBlocking;
-    this->mSocket = other.mSocket;
-    this->sizeOfAddr = other.sizeOfAddr;
-    this->connetcion = other.connetcion;
-    other.isNonBlocking = other.connetcion = other.sizeOfAddr = other.mSocket = 0;
-    other.addr = other.clientAddr = {};
-}
-
-Socket_M &Socket_M::operator=(const Socket_M &other)
-{
-    if (&other == this)
-        return *this;
-    this->addr = other.addr;
-    this->clientAddr = other.clientAddr;
-    this->isNonBlocking = other.isNonBlocking;
-    this->mSocket = other.mSocket;
-    this->connetcion = other.connetcion;
-    this->sizeOfAddr = other.sizeOfAddr;
-    return *this;
-
-}
-Socket_M &Socket_M::operator=(Socket_M &&other)
-{
-    if (&other == this)
-        return *this;
-    this->addr = other.addr;
-    this->clientAddr = other.clientAddr;
-    this->isNonBlocking = other.isNonBlocking;
-    this->mSocket = other.mSocket;
-    this->sizeOfAddr = other.sizeOfAddr;
-    this->connetcion = other.connetcion;
-    other.isNonBlocking = other.connetcion = other.sizeOfAddr = other.mSocket = 0;
-    other.addr = other.clientAddr = {};
-    return *this;
-}
-void Socket_M::upDate(std::string _addr, uint32_t _port, bool _isNonBlocking)
+void Socket_M::upDate(const std::string& _addr, const uint32_t _port, const bool _isNonBlocking)
 {
     this->addr.sin_family = AF_INET;
     this->addr.sin_addr.s_addr = inet_addr(_addr.c_str());
@@ -72,8 +23,10 @@ int Socket_M::listenPort()
     {
         if (isNonBlocking)
             fcntl(mSocket, F_SETFL, O_NONBLOCK);
-        if (setsockopt(mSocket,SOL_SOCKET,SO_REUSEADDR ,&temp,sizeof (int))>=0)
-            if (bind(mSocket,static_cast<sockaddr*>(static_cast<void*>(&addr)),sizeof (addr))>=0)
+        if (setsockopt(mSocket,SOL_SOCKET,//socket level flag 
+		SO_REUSEADDR //use same port/ip after terminate
+		,&temp,sizeof (int))>=0)//sets socket flags
+            if (bind(mSocket,static_cast<sockaddr*>(static_cast<void*>(&addr)),sizeof (addr))>=0)//address binding
                 if (listen(mSocket,SOMAXCONN) >=0)
                     return  1;
     }
@@ -82,7 +35,7 @@ int Socket_M::listenPort()
 bool Socket_M::getConnection()
 {
 
-    clientAddr.sin_addr.s_addr = INADDR_ANY;
+    clientAddr.sin_addr.s_addr = INADDR_ANY;//from any address
     unsigned int cSize = sizeof (clientAddr);
     connetcion = accept(mSocket,static_cast<sockaddr*>(static_cast<void*>(&clientAddr)),&cSize);
     return connetcion >=0;
@@ -98,7 +51,7 @@ Package Socket_M::getMessage() const
     return std::move(Package(msg));
 }
 
-void Socket_M::sendMessage(std::string str) const
+void Socket_M::sendMessage(const std::string& str) const
 {
     send(connetcion, str.data(), str.length(), NULL);
 }
@@ -110,10 +63,6 @@ void Socket_M::closeOuterConnection()
 }
 void Socket_M::closeInnerConnection()
 {
-
-    /*if (getsockopt(mSocket,SOL_SOCKET,SO_ERROR,nullptr,nullptr)==-1)
-        if (errno != 88)
-            sendEmptyInnerMessage();*/
     close(mSocket);
     mSocket = 0;
 }

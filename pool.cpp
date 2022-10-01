@@ -37,6 +37,7 @@ void Pool::work()
 }
 void Pool::addTask(Socket_M sock)
 {
+	//No extra thred until notify_one() -> no mutex needed
     taskList.emplace(sock);
     cv.notify_one();
 }
